@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -49,33 +50,29 @@ class _GPSContainerState extends State<GPSContainer> {
         if (event == RawSocketEvent.read) {
           Datagram? datagram = _socket.receive();
           if (datagram != null) {
-            String message = utf8.decode(datagram.data);
-            print('Alınan GPS verisi: $message');
-            List<String> coordinates = message.split(',');
-            if (coordinates.length == 3) {
-              try {
-                double lat = double.parse(coordinates[0]);
-                double lon = double.parse(coordinates[1]);
-                double alt = double.parse(coordinates[2]);
+            try {
+              // Binary veriyi oku
+              ByteData byteData = ByteData.sublistView(datagram.data);
+              double lat = byteData.getFloat32(0, Endian.big);
+              double lon = byteData.getFloat32(4, Endian.big);
+              double alt = byteData.getFloat32(8, Endian.big);
+              
+              print('Yeni konum alındı: $lat, $lon, $alt');
+              
+              if (mounted) {
+                setState(() {
+                  _latitude = lat.toStringAsFixed(6);
+                  _longitude = lon.toStringAsFixed(6);
+                  _altitude = alt.toStringAsFixed(2);
+                  _currentPosition = LatLng(lat, lon);
+                });
                 
-                print('Yeni konum alındı: $lat, $lon, $alt');
-                
-                if (mounted) {
-                  setState(() {
-                    _latitude = coordinates[0];
-                    _longitude = coordinates[1];
-                    _altitude = coordinates[2];
-                    _currentPosition = LatLng(lat, lon);
-                  });
-                  
-                  // Haritayı güncelle
-                  _mapController.move(_currentPosition, 15);
-                  print('Harita güncellendi: ${_currentPosition.latitude}, ${_currentPosition.longitude}');
-                }
-                
-              } catch (e) {
-                print('Koordinat dönüştürme hatası: $e');
+                // Haritayı güncelle
+                _mapController.move(_currentPosition, 15);
+                print('Harita güncellendi: ${_currentPosition.latitude}, ${_currentPosition.longitude}');
               }
+            } catch (e) {
+              print('Veri işleme hatası: $e');
             }
           }
         }

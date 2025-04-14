@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-class Battery {
+class Battery extends StatelessWidget {
   final dynamic state;
 
-  Battery({required this.state});
+  const Battery({Key? key, required this.state}) : super(key: key);
 
-  Widget buildBatteryWidget(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 220,
       height: 220,

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:agmdm/CameraContainer.dart';
 import 'package:agmdm/GpsContainer.dart';
 import 'package:agmdm/Log1Container.dart';
-import 'package:agmdm/SignalStrengthcontainer.dart';
+import 'package:agmdm/SignalStrengthContainer.dart';
 import 'package:agmdm/BatteryContainer.dart';
 import 'package:agmdm/CompassContainer.dart';
-import 'package:agmdm/FligthComputerContainer.dart';
+import 'package:agmdm/FlightComputerContainer.dart';
 import 'package:agmdm/Log2Container.dart';
 import 'package:agmdm/Log3Container.dart';
 
@@ -27,27 +27,32 @@ class _AGMDMState extends State<AGMDM_UI> {
   late Battery batterycontainer;
   late CameraContainer cameracontainer;
   late Compasscontainer compasscontainer;
-  late FligthComputer fligthcomputercontainer;
+  late FlightComputer flightcomputercontainer;
   late GPSContainer gpscontainer;
   late Log1 log1container;
   late Log2 log2container;
   late Log3 log3container;
-  late SignalStrength signalstrengthcontainer;
+  late SignalStrengthContainer signalstrengthcontainer;
 
   final GlobalKey scaffoldKey = GlobalKey();
+  final GlobalKey<Log1State> log1Key = GlobalKey<Log1State>();
+
+  void addLog(String message) {
+    log1Key.currentState?.addLog(message);
+  }
 
   @override
   void initState() {
     super.initState();
-    batterycontainer = Battery(state: _AGMDMState());
-    cameracontainer = CameraContainer(state: _AGMDMState());
-    compasscontainer = Compasscontainer(state: _AGMDMState());
-    fligthcomputercontainer = FligthComputer(state: _AGMDMState());
-    gpscontainer = GPSContainer(state: _AGMDMState());
-    log1container = Log1(state: _AGMDMState());
-    log2container = Log2(state: _AGMDMState());
-    log3container = Log3(state: _AGMDMState());
-    signalstrengthcontainer = SignalStrength(state: _AGMDMState());
+    batterycontainer = Battery(state: this);
+    cameracontainer = CameraContainer(state: this);
+    compasscontainer = Compasscontainer(state: this);
+    flightcomputercontainer = FlightComputer(state: this);
+    gpscontainer = GPSContainer(state: this);
+    log1container = Log1(key: log1Key, state: this);
+    log2container = Log2(state: this);
+    log3container = Log3(state: this);
+    signalstrengthcontainer = SignalStrengthContainer(state: this);
   }
   
   @override
@@ -97,19 +102,17 @@ class _AGMDMState extends State<AGMDM_UI> {
                                       Align(
                                         alignment: const AlignmentDirectional(0, 0),
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  19, 30, 0, 10),
-                                          child: log1container.buildLog1WidgeT(context),
+                                          padding: const EdgeInsetsDirectional.fromSTEB(
+                                              19, 30, 0, 10),
+                                          child: log1container,
                                         ),
                                       ),
                                       Align(
                                         alignment: const AlignmentDirectional(0, 0),
                                         child: Padding(
-                                          padding:
-                                              const EdgeInsetsDirectional.fromSTEB(
-                                                  19, 10, 0, 0),
-                                          child: log2container.buildLog2Widget(context),
+                                          padding: const EdgeInsetsDirectional.fromSTEB(
+                                              19, 10, 0, 0),
+                                          child: log2container,
                                         ),
                                       ),
                                     ],
@@ -137,7 +140,7 @@ class _AGMDMState extends State<AGMDM_UI> {
                                 child: Padding(
                                   padding: const EdgeInsetsDirectional.fromSTEB(
                                       75, 10, 0, 0),
-                                  child: Compasscontainer(state: _AGMDMState()),
+                                  child: compasscontainer,
                                 ),
                               ),
                               Align(
@@ -145,7 +148,7 @@ class _AGMDMState extends State<AGMDM_UI> {
                                 child: Padding(
                                   padding: const EdgeInsetsDirectional.fromSTEB(
                                       75, 15, 0, 0),
-                                  child: fligthcomputercontainer.buildFligthComputerWidget(context),
+                                  child: flightcomputercontainer,
                                 ),
                               ),
                               Align(
@@ -153,7 +156,7 @@ class _AGMDMState extends State<AGMDM_UI> {
                                 child: Padding(
                                   padding: const EdgeInsetsDirectional.fromSTEB(
                                       75, 10, 0, 0),
-                                  child: signalstrengthcontainer.buildSignalStrengthWidget(context),
+                                  child: signalstrengthcontainer,
                                 ),
                               ),
                               Align(
@@ -161,7 +164,7 @@ class _AGMDMState extends State<AGMDM_UI> {
                                 child: Padding(
                                   padding: const EdgeInsetsDirectional.fromSTEB(
                                       50, 10, 10, 0),
-                                  child: batterycontainer.buildBatteryWidget(context),
+                                  child: batterycontainer,
                                 ),
                               ),
                               Align(
@@ -169,7 +172,7 @@ class _AGMDMState extends State<AGMDM_UI> {
                                 child: Padding(
                                   padding: const EdgeInsetsDirectional.fromSTEB(
                                       69, 10, 10, 0),
-                                  child: log3container.buildLog3Widget(context),
+                                  child: log3container,
                                 ),
                               ),
                             ],
